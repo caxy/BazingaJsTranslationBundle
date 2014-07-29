@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\Resource\FileResource;
+use Symfony\Component\Filesystem\Exception\IOException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @author William DURAND <william.durand1@gmail.com>
@@ -137,7 +139,11 @@ class Controller
                 'defaultDomains'  => $this->defaultDomains,
             ));
 
-            $cache->write($content, $resources);
+            try {
+                $cache->write($content, $resources);
+            } catch (IOException $e) {
+                throw new NotFoundHttpException();
+            }
         }
 
         $content = file_get_contents((string) $cache);
